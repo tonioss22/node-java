@@ -3,12 +3,18 @@
 #include "javaObject.h"
 
 extern "C" {
-  static void init(v8::Local<v8::Object> target) {
-    Java::Init(target);
-    JavaObject::Init(target);
+  static void init(v8::Local<v8::Object> exports) {
+    Java::Init(exports);
+    JavaObject::Init(exports);
   }
 
-  NODE_MODULE(nodejavabridge_bindings, init);
+  #if (NODE_MAJOR_VERSION >= 10 && NODE_MINOR_VERSION >= 7) || NODE_MAJOR_VERSION >= 11
+  NODE_MODULE_INIT() {
+    init(exports);
+  }
+  #else
+    NODE_MODULE(nodejavabridge_bindings, init);
+  #endif
 }
 
 #ifdef WIN32
